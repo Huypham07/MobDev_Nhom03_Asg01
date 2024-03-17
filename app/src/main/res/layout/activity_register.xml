@@ -47,6 +47,7 @@
                 android:id="@+id/fullName"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:background="@drawable/background_edittext"
+                android:inputType="textPersonName"
                 android:hint="Full name" android:padding="12dp" android:layout_marginTop="16dp"/>
 
         <EditText

@@ -68,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-//                checkingFormat(emailEditText.getText().toString(), passwordEditText.getText().toString());
+                checkingFormat(emailEditText.getText().toString(), passwordEditText.getText().toString());
             }
         };
         emailEditText.addTextChangedListener(afterTextChangedListener);
@@ -87,7 +87,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                login();
+                login(emailEditText.getText().toString(), passwordEditText.getText().toString());
             }
         });
 
@@ -98,24 +98,34 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            String inf = intent.getStringExtra("newEmail");
+            if (inf != null) {
+                emailEditText.setText(inf);
+            }
+        }
     }
 
-    private boolean checkingFormat(String userName, String password) {
+    private boolean checkingFormat(String email, String password) {
         boolean check = true;
-        if (userName.isEmpty()) {
-            emailEditText.setError("Username must not be empty");
+        if (email.isEmpty()) {
+            emailEditText.setError("Email must not be empty");
             check = false;
         }
-        if (password.length() < 8) {
-            passwordEditText.setError("Password at least 8 characters");
+        if (password.isEmpty()) {
+            passwordEditText.setError("Password must not be empty");
             check = false;
         }
         loginButton.setEnabled(check);
         return check;
     }
 
-    private void login() {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
+    private void login(String email, String password) {
+        if (checkingFormat(email, password)) {
+            Intent intent = new Intent(LoginActivity.this, GameActivity.class);
+            startActivity(intent);
+        }
     }
 }

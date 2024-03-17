@@ -55,7 +55,10 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-//                checkingFormat(emailEditText.getText().toString(), passwordEditText.getText().toString());
+                checkingFormat(new User(emailEditText.getText().toString()
+                        , passwordEditText.getText().toString()
+                        , fullName.getText().toString()
+                        , birthday.getText().toString()));
             }
         };
         emailEditText.addTextChangedListener(afterTextChangedListener);
@@ -80,6 +83,15 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                register(new User(emailEditText.getText().toString()
+                        , passwordEditText.getText().toString()
+                        , fullName.getText().toString()
+                        , birthday.getText().toString()));
+            }
+        });
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,5 +100,30 @@ public class RegisterActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private boolean checkingFormat(User user) {
+        boolean check = true;
+        if (user.getEmail().isEmpty()) {
+            emailEditText.setError("Email must not be empty");
+            check = false;
+        }
+        if (user.getPassword().length() < 8) {
+            passwordEditText.setError("Password at least 8 characters");
+            check = false;
+        }
+        if (user.getFullname().isEmpty()) {
+            fullName.setError("Full name must not empty");
+            check = false;
+        }
+        return check;
+    }
+
+    private void register(User user) {
+        if (checkingFormat(user)) {
+            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+            intent.putExtra("newEmail", user.getEmail());
+            startActivity(intent);
+        }
     }
 }

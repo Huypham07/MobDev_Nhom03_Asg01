@@ -64,7 +64,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/loginButton" app:cornerRadius="10dp"
                 android:layout_gravity="center_horizontal" android:paddingStart="70dp" android:paddingEnd="70dp"
-                android:layout_marginBottom="8dp" android:backgroundTint="#4F8BF3" android:textSize="16sp"
+                android:layout_marginBottom="8dp" android:textSize="16sp"
+                android:enabled="false"
                 android:textColor="#FFFFFF"/>
         <TextView
                 android:text="Don't have an account? Register"
