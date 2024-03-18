@@ -7,4 +7,9 @@
     </style>
 
     <style name="Theme.MobDev_Nhom03_Asg01" parent="Base.Theme.MobDev_Nhom03_Asg01"/>
+
+    <style name="fadeAnimation">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
 </resources>

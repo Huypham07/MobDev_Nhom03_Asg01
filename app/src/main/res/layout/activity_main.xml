@@ -21,34 +21,42 @@
                 android:layout_height="wrap_content" android:id="@+id/textView3" android:layout_weight="1"
                 android:textColor="#EDEAEA" android:layout_marginStart="8dp"/>
     </LinearLayout>
-    <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp">
-        <TextView
-                android:text="Wing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/textView4"
-                android:textColor="#EDEAEA" android:textStyle="bold" android:layout_marginEnd="8dp"
-                android:textSize="32sp" android:fontFamily="sans-serif-black" android:layout_gravity="center_vertical"
-                android:textAlignment="gravity"/>
-        <TextView
-                android:text="Fighter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/textView5"
-                android:textColor="#48C8BD" android:textStyle="bold" android:textSize="44sp"
-                android:fontFamily="sans-serif-black" android:layout_gravity="center_vertical"/>
-    </LinearLayout>
-    <ImageView
-            android:src="@drawable/ship5"
-            android:layout_width="200dp"
-            android:layout_height="200dp" android:id="@+id/skinChange" android:padding="24dp"
-            android:background="@drawable/double_line_rectangle"
-            android:layout_gravity="center_horizontal" android:layout_marginTop="32dp"
-            android:layout_marginBottom="40dp"/>
-    <FrameLayout
+    <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:id="@+id/fragmentView"/>
+            android:layout_height="match_parent">
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp" android:layout_alignParentTop="false"
+                android:layout_above="@id/skinChange" android:layout_centerHorizontal="true">
+            <TextView
+                    android:text="Wing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/textView4"
+                    android:textColor="#EDEAEA" android:textStyle="bold" android:layout_marginEnd="8dp"
+                    android:textSize="32sp" android:fontFamily="sans-serif-black"
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="gravity"/>
+            <TextView
+                    android:text="Fighter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/textView5"
+                    android:textColor="#48C8BD" android:textStyle="bold" android:textSize="44sp"
+                    android:fontFamily="sans-serif-black" android:layout_gravity="center_vertical"/>
+        </LinearLayout>
+        <ImageView
+                android:src="@drawable/ship5"
+                android:layout_width="200dp"
+                android:layout_height="200dp" android:id="@+id/skinChange" android:padding="24dp"
+                android:background="@drawable/double_line_rectangle"
+                android:layout_gravity="center_horizontal" android:layout_marginTop="32dp"
+                android:layout_marginBottom="40dp" android:backgroundTint="#FFFFFF"
+                android:layout_above="@id/fragmentView" android:layout_centerHorizontal="true"/>
+        <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/fragmentView"
+                android:layout_alignParentBottom="true" android:layout_marginBottom="60dp"/>
+    </RelativeLayout>
 
 </LinearLayout>

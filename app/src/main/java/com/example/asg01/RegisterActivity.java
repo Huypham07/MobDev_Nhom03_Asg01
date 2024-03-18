@@ -31,6 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button registerButton;
     private TextView registerError;
     private TextView loginButton;
+    private ProgressBar progressBar;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase database;
@@ -54,6 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.registerButton);
         registerError = findViewById(R.id.registerError);
         loginButton = findViewById(R.id.loginBtn);
+        progressBar = findViewById(R.id.progressBar2);
 
         KeyBoard.setupHideKeyBoard(this, emailEditText);
         KeyBoard.setupHideKeyBoard(this, passwordEditText);
@@ -144,6 +146,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void register(String email, String password, User user) {
+        progressBar.setVisibility(View.VISIBLE);
         if (checkingFormat(email, password, user)) {
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -157,16 +160,19 @@ public class RegisterActivity extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull @NotNull Task<Void> task) {
                                         if (task.isSuccessful()) {
+                                            progressBar.setVisibility(View.GONE);
                                             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                                             intent.putExtra("newEmail", email);
                                             startActivity(intent);
                                         } else {
                                             Toast.makeText(RegisterActivity.this, "Can't add user's information", Toast.LENGTH_LONG).show();
+                                            progressBar.setVisibility(View.GONE);
                                         }
                                     }
                                 });
                             } else {
                                 Toast.makeText(RegisterActivity.this, "Registration failed!!", Toast.LENGTH_LONG).show();
+                                progressBar.setVisibility(View.GONE);
                             }
                         }
                     });

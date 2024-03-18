@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:orientation="vertical" android:background="@drawable/double_line_rectangle">
+        <com.example.asg01.ImageViewPicker
+                android:id="@+id/viewpage"
+                android:layout_width="260dp" android:layout_height="260dp"
+                android:contentDescription="@string/app_name" android:layout_gravity="center"
+                android:background="@drawable/double_line_rectangle"
+                android:padding="30dp"/>
+    </LinearLayout>
+
+    <RelativeLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <Button
+                android:text="Cancel"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content" android:id="@+id/button5" android:layout_weight="1"
+                android:layout_alignParentLeft="true" android:layout_alignParentTop="true" android:textSize="20sp"
+                android:backgroundTint="#E84A3F"
+                android:layout_marginTop="16dp"/>
+        <Button
+                android:text="Save"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content" android:id="@+id/button2"
+                android:layout_gravity="center_horizontal" android:layout_marginTop="16dp"
+                android:backgroundTint="#0DC667" android:textSize="20sp" android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"/>
+    </RelativeLayout>
+
+</LinearLayout>

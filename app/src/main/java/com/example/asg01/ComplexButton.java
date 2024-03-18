@@ -1,5 +1,6 @@
 package com.example.asg01;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -10,11 +11,6 @@ import android.view.ViewGroup;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ComplexButton#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ComplexButton extends Fragment {
 
     private ImageView startButton;
@@ -52,7 +48,8 @@ public class ComplexButton extends Fragment {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), GameActivity.class);
+                Activity activity = getActivity();
+                Intent intent = new Intent(activity, GameActivity.class);
                 startActivity(intent);
             }
         });

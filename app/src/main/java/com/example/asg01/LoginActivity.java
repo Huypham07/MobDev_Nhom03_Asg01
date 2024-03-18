@@ -36,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView loginError;
     private String oldEmail;
     private String oldPassword;
+    private ProgressBar progressBar;
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
@@ -64,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         loginError = findViewById(R.id.loginError);
         forgotPasswordButton = findViewById(R.id.forgotPassword);
         registerButton = findViewById(R.id.registerBtn);
+        progressBar = findViewById(R.id.progressBar);
 
         // sharedPref
         sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
@@ -155,11 +157,11 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
-        editor.putString("email", emailEditText.getText().toString());
-        editor.putString("password", passwordEditText.getText().toString());
-
-        editor.apply();
+        if (firebaseAuth.getCurrentUser() != null) {
+            editor.putString("email", emailEditText.getText().toString());
+            editor.putString("password", passwordEditText.getText().toString());
+            editor.apply();
+        }
     }
 
     private boolean checkingFormat(String email, String password) {
@@ -181,6 +183,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login(String email, String password) {
+        progressBar.setVisibility(View.VISIBLE);
         if (checkingFormat(email, password)) {
             firebaseAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -194,16 +197,19 @@ public class LoginActivity extends AppCompatActivity {
                                             public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
                                                 if (task.isSuccessful()) {
                                                     User user = task.getResult().getValue(User.class);
+                                                    progressBar.setVisibility(View.GONE);
                                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                                     intent.putExtra("user", user);
                                                     startActivity(intent);
                                                 } else {
                                                     Log.e("firebase", "Error getting data", task.getException());
+                                                    progressBar.setVisibility(View.GONE);
                                                 }
                                             }
                                         });
                             } else {
                                 loginError.setText("Incorrect email or password");
+                                progressBar.setVisibility(View.GONE);
                             }
                         }
                     });

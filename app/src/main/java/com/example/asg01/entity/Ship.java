@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.Toast;
 import com.example.asg01.GameView;
+import com.example.asg01.MainActivity;
 import com.example.asg01.R;
 
 public class Ship {
@@ -13,7 +14,13 @@ public class Ship {
     private Resources res;
     public Ship(Resources res) {
         this.res = res;
-        changeSkin(R.drawable.ship1);
+        skin = BitmapFactory.decodeResource(res, MainActivity.getCurrentSkin());
+        w = skin.getWidth();
+        h = skin.getHeight();
+        double ratio = (double) h / w;
+        w = GameView.screenX / 5;
+        h = (int) (ratio * w);
+        skin = Bitmap.createScaledBitmap(skin, w, h, false);
         x = (GameView.screenX - w) / 2;
         y = GameView.screenY - h * 3 / 2;
     }
@@ -53,16 +60,5 @@ public class Ship {
     public Bitmap getSkin() {
         return skin;
     }
-
-    public void changeSkin(int src) {
-        skin = BitmapFactory.decodeResource(res, src);
-        w = skin.getWidth();
-        h = skin.getHeight();
-        double ratio = (double) h / w;
-        w = GameView.screenX / 5;
-        h = (int) (ratio * w);
-        skin = Bitmap.createScaledBitmap(skin, w, h, false);
-    }
-
 
 }
