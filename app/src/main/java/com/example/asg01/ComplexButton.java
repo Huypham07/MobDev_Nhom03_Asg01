@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,6 +22,9 @@ public class ComplexButton extends Fragment {
     private ImageView rankButton;
     private ImageView shareButton;
     private ImageView donateButton;
+
+    private FirebaseAuth firebaseAuth;
+    private FirebaseDatabase database;
     public ComplexButton() {
         // Required empty public constructor
     }
@@ -40,7 +45,9 @@ public class ComplexButton extends Fragment {
         shareButton = rootView.findViewById(R.id.shareButton);
         donateButton = rootView.findViewById(R.id.donateButton);
 
-
+        // get firebaseAuth and DBreference
+        firebaseAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,8 +60,10 @@ public class ComplexButton extends Fragment {
         settingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(getActivity(), SettingsActivity.class);
-//                startActivity(intent);
+                firebaseAuth.signOut();
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                intent.putExtra("islogout", true);
+                startActivity(intent);
             }
         });
         return rootView;

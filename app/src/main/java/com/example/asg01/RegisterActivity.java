@@ -8,8 +8,18 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Firebase;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Calendar;
 
@@ -21,6 +31,9 @@ public class RegisterActivity extends AppCompatActivity {
     private Button registerButton;
     private TextView registerError;
     private TextView loginButton;
+
+    private FirebaseAuth firebaseAuth;
+    private FirebaseDatabase database;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +42,10 @@ public class RegisterActivity extends AppCompatActivity {
         final LinearLayout linearLayout = findViewById(R.id.registerlayout);
         Animation slideUpAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up);
         linearLayout.startAnimation(slideUpAnimation);
+
+        // get firebaseAuth and DBreference
+        firebaseAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
 
         emailEditText = findViewById(R.id.emailRegister);
         passwordEditText = findViewById(R.id.passwordRegister);
@@ -55,9 +72,9 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                checkingFormat(new User(emailEditText.getText().toString()
+                checkingFormat(emailEditText.getText().toString()
                         , passwordEditText.getText().toString()
-                        , fullName.getText().toString()
+                        , new User(fullName.getText().toString()
                         , birthday.getText().toString()));
             }
         };
@@ -86,10 +103,11 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                register(new User(emailEditText.getText().toString()
+                register(emailEditText.getText().toString()
                         , passwordEditText.getText().toString()
-                        , fullName.getText().toString()
-                        , birthday.getText().toString()));
+                        , new User(fullName.getText().toString()
+                                , birthday.getText().toString()));
+
             }
         });
 
@@ -102,28 +120,57 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private boolean checkingFormat(User user) {
+    private boolean checkingFormat(String email, String password, User user) {
         boolean check = true;
-        if (user.getEmail().isEmpty()) {
+        if (email.isEmpty()) {
             emailEditText.setError("Email must not be empty");
             check = false;
+        } else {
+            emailEditText.setError(null);
         }
-        if (user.getPassword().length() < 8) {
+        if (password.length() < 8) {
             passwordEditText.setError("Password at least 8 characters");
             check = false;
+        } else {
+            passwordEditText.setError(null);
         }
         if (user.getFullname().isEmpty()) {
             fullName.setError("Full name must not empty");
             check = false;
+        } else {
+            fullName.setError(null);
         }
         return check;
     }
 
-    private void register(User user) {
-        if (checkingFormat(user)) {
-            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-            intent.putExtra("newEmail", user.getEmail());
-            startActivity(intent);
+    private void register(String email, String password, User user) {
+        if (checkingFormat(email, password, user)) {
+            firebaseAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull @NotNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                FirebaseUser curUser = firebaseAuth.getCurrentUser();
+
+                                DatabaseReference reference = database.getReference("Users");
+                                reference.child(curUser.getUid()).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull @NotNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                            intent.putExtra("newEmail", email);
+                                            startActivity(intent);
+                                        } else {
+                                            Toast.makeText(RegisterActivity.this, "Can't add user's information", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(RegisterActivity.this, "Registration failed!!", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+
         }
     }
 }

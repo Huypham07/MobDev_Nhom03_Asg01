@@ -6,19 +6,26 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.*;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.animation.AnimationUtils;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.FirebaseDatabase;
+import org.jetbrains.annotations.NotNull;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText emailEditText;
@@ -33,6 +40,9 @@ public class LoginActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
+    private FirebaseAuth firebaseAuth;
+    private FirebaseDatabase database;
+
     @SuppressLint({"ResourceType", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +53,10 @@ public class LoginActivity extends AppCompatActivity {
         Animation slideUpAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up);
         linearLayout.startAnimation(slideUpAnimation);
 
+        // get firebaseAuth and DBreference
+        firebaseAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+
         // assign
         passwordEditText = findViewById(R.id.passwordLogin);
         emailEditText = findViewById(R.id.emailLogin);
@@ -51,6 +65,9 @@ public class LoginActivity extends AppCompatActivity {
         forgotPasswordButton = findViewById(R.id.forgotPassword);
         registerButton = findViewById(R.id.registerBtn);
 
+        // sharedPref
+        sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        editor = sharedPreferences.edit();
 
         KeyBoard.setupHideKeyBoard(this, passwordEditText);
         KeyBoard.setupHideKeyBoard(this, emailEditText);
@@ -84,6 +101,15 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                if (id == EditorInfo.IME_ACTION_DONE) {
+                    login(emailEditText.getText().toString(), passwordEditText.getText().toString());
+                }
+                return false;
+            }
+        });
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -105,7 +131,35 @@ public class LoginActivity extends AppCompatActivity {
             if (inf != null) {
                 emailEditText.setText(inf);
             }
+            if (intent.getBooleanExtra("islogout", false)) {
+                editor.clear();
+                editor.apply();
+            }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        oldEmail = sharedPreferences.getString("email", "");
+        oldPassword = sharedPreferences.getString("password", "");
+
+        if (!oldPassword.isEmpty() && !oldEmail.isEmpty()) {
+            emailEditText.setText(oldEmail);
+            passwordEditText.setText(oldPassword);
+            login(oldEmail, oldPassword);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        editor.putString("email", emailEditText.getText().toString());
+        editor.putString("password", passwordEditText.getText().toString());
+
+        editor.apply();
     }
 
     private boolean checkingFormat(String email, String password) {
@@ -113,10 +167,14 @@ public class LoginActivity extends AppCompatActivity {
         if (email.isEmpty()) {
             emailEditText.setError("Email must not be empty");
             check = false;
+        } else {
+            emailEditText.setError(null);
         }
         if (password.isEmpty()) {
             passwordEditText.setError("Password must not be empty");
             check = false;
+        } else {
+            passwordEditText.setError(null);
         }
         loginButton.setEnabled(check);
         return check;
@@ -124,8 +182,31 @@ public class LoginActivity extends AppCompatActivity {
 
     private void login(String email, String password) {
         if (checkingFormat(email, password)) {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
+            firebaseAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull @NotNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                String UID = firebaseAuth.getCurrentUser().getUid();
+                                database.getReference("Users").child(UID).get()
+                                        .addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
+                                                if (task.isSuccessful()) {
+                                                    User user = task.getResult().getValue(User.class);
+                                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                    intent.putExtra("user", user);
+                                                    startActivity(intent);
+                                                } else {
+                                                    Log.e("firebase", "Error getting data", task.getException());
+                                                }
+                                            }
+                                        });
+                            } else {
+                                loginError.setText("Incorrect email or password");
+                            }
+                        }
+                    });
         }
     }
 }
