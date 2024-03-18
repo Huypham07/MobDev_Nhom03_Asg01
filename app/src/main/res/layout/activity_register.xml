@@ -31,14 +31,14 @@
                 android:id="@+id/emailRegister"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
-                android:background="@drawable/background_edittext"
+                android:background="@drawable/line_rectangle"
                 android:hint="Email" android:padding="12dp"/>
 
         <EditText
                 android:id="@+id/passwordRegister"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:background="@drawable/background_edittext"
+                android:background="@drawable/line_rectangle"
                 android:selectAllOnFocus="true"
                 android:hint="Password"
                 android:padding="12dp" android:layout_marginTop="16dp"/>
@@ -46,7 +46,7 @@
         <EditText
                 android:id="@+id/fullName"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:background="@drawable/background_edittext"
+                android:background="@drawable/line_rectangle"
                 android:inputType="textPersonName"
                 android:hint="Full name" android:padding="12dp" android:layout_marginTop="16dp"/>
 
@@ -54,7 +54,7 @@
                 android:id="@+id/birthday"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:inputType="datetime"
-                android:background="@drawable/background_edittext"
+                android:background="@drawable/line_rectangle"
                 android:focusable="false"
                 android:hint="Birthday" android:padding="12dp" android:layout_marginTop="16dp" android:layout_marginBottom="8dp"/>
 

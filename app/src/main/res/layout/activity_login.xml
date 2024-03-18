@@ -31,14 +31,14 @@
                 android:id="@+id/emailLogin"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
-                android:background="@drawable/background_edittext"
+                android:background="@drawable/line_rectangle"
                 android:hint="Email" android:padding="12dp"/>
 
         <EditText
                 android:id="@+id/passwordLogin"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:background="@drawable/background_edittext"
+                android:background="@drawable/line_rectangle"
                 android:selectAllOnFocus="true"
                 android:hint="Password"
                 android:imeOptions="actionNone"

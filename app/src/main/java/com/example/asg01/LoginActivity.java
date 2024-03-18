@@ -124,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void login(String email, String password) {
         if (checkingFormat(email, password)) {
-            Intent intent = new Intent(LoginActivity.this, GameActivity.class);
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
         }
     }

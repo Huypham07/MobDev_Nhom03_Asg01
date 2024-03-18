@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             tools:context=".ComplexButton">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_gravity="center_horizontal">
+            <ImageView
+                    android:src="@drawable/baseline_settings_suggest"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp" android:id="@+id/settingButton" android:layout_weight="1"
+                    android:layout_gravity="bottom"/>
+            <ImageView
+                    android:src="@drawable/baseline_play_circle_filled_24"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp" android:id="@+id/startButton"
+                    android:layout_gravity="center_horizontal" android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp" android:layout_marginStart="16dp"/>
+            <ImageView
+                    android:src="@drawable/ranking"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp" android:id="@+id/rankButton" android:layout_weight="1"
+                    android:layout_gravity="bottom"/>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_marginTop="24dp"
+                android:layout_gravity="center_horizontal">
+            <ImageView
+                    android:src="@drawable/baseline_share"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp" android:id="@+id/shareButton" android:layout_weight="1"
+                    android:layout_gravity="start" android:layout_marginEnd="32dp"/>
+            <ImageView
+                    android:src="@drawable/donate"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp" android:id="@+id/donateButton" android:layout_weight="1"
+                    android:layout_marginStart="32dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

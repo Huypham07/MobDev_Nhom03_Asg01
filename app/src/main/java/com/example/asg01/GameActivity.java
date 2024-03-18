@@ -8,6 +8,11 @@ import androidx.appcompat.app.AppCompatActivity;
 public class GameActivity extends AppCompatActivity {
     private GameView gameView;
 
+
+
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
