@@ -2,14 +2,23 @@ package com.example.asg01;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.widget.ImageView;
+import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Date;
 
 public class ComplexButton extends Fragment {
 
@@ -45,6 +54,8 @@ public class ComplexButton extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
 
+
+
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,6 +74,51 @@ public class ComplexButton extends Fragment {
                 startActivity(intent);
             }
         });
+
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                screenshot(getActivity().getWindow().getDecorView().getRootView(), "screenshot");
+            }
+        });
         return rootView;
+    }
+
+
+
+    private File screenshot(View view, String filename) {
+        Date date = new Date();
+
+        // Here we are initialising the format of our image name
+        CharSequence format = android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", date);
+        try {
+            // Initialising the directory of storage
+            String dirpath = Environment.getExternalStorageDirectory() + "";
+            File file = new File(dirpath);
+            if (!file.exists()) {
+                boolean mkdir = file.mkdir();
+            }
+
+            // File name
+            String path = dirpath + "/" + filename + "-" + format + ".jpeg";
+            view.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+            view.setDrawingCacheEnabled(false);
+            File imageurl = new File(path);
+            if (imageurl.exists()) {
+                Toast.makeText(getContext(), "abc", Toast.LENGTH_SHORT).show();
+            }
+            FileOutputStream outputStream = new FileOutputStream(imageurl);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            outputStream.flush();
+            outputStream.close();
+            return imageurl;
+
+        } catch (FileNotFoundException io) {
+            io.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

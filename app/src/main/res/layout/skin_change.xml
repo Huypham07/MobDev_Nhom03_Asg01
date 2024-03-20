@@ -3,15 +3,14 @@
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:orientation="vertical">
-    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                  android:orientation="vertical" android:background="@drawable/double_line_rectangle">
-        <com.example.asg01.ImageViewPicker
-                android:id="@+id/viewpage"
-                android:layout_width="260dp" android:layout_height="260dp"
-                android:contentDescription="@string/app_name" android:layout_gravity="center"
-                android:background="@drawable/double_line_rectangle"
-                android:padding="30dp"/>
-    </LinearLayout>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+              android:text="Change your skin" android:textAlignment="center" android:layout_marginBottom="16dp"
+              android:textSize="24sp" android:textStyle="bold" android:textColor="#FFF6F6"/>
+    <ViewFlipper
+            android:id="@+id/viewFlipper"
+            android:layout_width="260dp" android:layout_height="260dp" android:padding="30dp"
+            android:orientation="vertical" android:background="@drawable/double_line_rectangle">
+    </ViewFlipper>
 
     <RelativeLayout
             android:orientation="horizontal"
