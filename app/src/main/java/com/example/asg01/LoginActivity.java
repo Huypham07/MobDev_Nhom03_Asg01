@@ -71,9 +71,6 @@ public class LoginActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        KeyBoard.setupHideKeyBoard(this, passwordEditText);
-        KeyBoard.setupHideKeyBoard(this, emailEditText);
-
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -162,6 +159,15 @@ public class LoginActivity extends AppCompatActivity {
             editor.putString("password", passwordEditText.getText().toString());
             editor.apply();
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (getCurrentFocus() != null) {
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+        return true;
     }
 
     private boolean checkingFormat(String email, String password) {

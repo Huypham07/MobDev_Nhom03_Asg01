@@ -1,12 +1,15 @@
 package com.example.asg01;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -56,10 +59,6 @@ public class RegisterActivity extends AppCompatActivity {
         registerError = findViewById(R.id.registerError);
         loginButton = findViewById(R.id.loginBtn);
         progressBar = findViewById(R.id.progressBar2);
-
-        KeyBoard.setupHideKeyBoard(this, emailEditText);
-        KeyBoard.setupHideKeyBoard(this, passwordEditText);
-        KeyBoard.setupHideKeyBoard(this, fullName);
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
@@ -120,6 +119,14 @@ public class RegisterActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    public boolean onTouchEvent(MotionEvent event) {
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (getCurrentFocus() != null) {
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+        return true;
     }
 
     private boolean checkingFormat(String email, String password, User user) {

@@ -25,4 +25,16 @@ public class GameOverActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MyMediaPlayer.getInstance(getApplicationContext(), R.raw.sound).play();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        MyMediaPlayer.getInstance(getApplicationContext(), R.raw.sound).pause();
+    }
 }

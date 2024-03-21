@@ -3,13 +3,13 @@ package com.example.asg01;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.IBinder;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -49,11 +49,24 @@ public class MainActivity extends AppCompatActivity {
     private static String[] permissionList;
     private int permissionRequestCode = 1;
 
+    private MyService myService;
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
     }
 
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            MyService.MyBinder myBinder = (MyService.MyBinder) iBinder;
+            myService = myBinder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            myService = null;
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                     "Manifest.permission.WRITE_EXTERNAL_STORAGE",
             };
         }
-        checkAllPermission();
+//        checkAllPermission();
         skinChange = findViewById(R.id.skinChange);
         welcome = findViewById(R.id.textView3);
 
@@ -162,6 +175,11 @@ public class MainActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
+
+
+        Intent intent = new Intent(this, MyService.class);
+        startService(intent);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -169,6 +187,9 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         curSkinNumber = sharedPreferences.getInt("oldSkin", 0);
         skinChange.setImageResource(skins[curSkinNumber]);
+        if (myService != null) {
+            myService.playMedia();
+        }
     }
 
     @Override
@@ -176,6 +197,20 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         editor.putInt("oldSkin", curSkinNumber);
         editor.apply();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        myService.pauseMedia();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent intent = new Intent(this, MyService.class);
+        stopService(intent);
+        unbindService(connection);
     }
 
     public static int getCurrentSkin() {

@@ -1,7 +1,9 @@
 package com.example.asg01;
 
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -34,5 +36,12 @@ public class GameActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         gameView.resume();
+//        MyMediaPlayer.getInstance(getApplicationContext(), R.raw.sound).play();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+//        MyMediaPlayer.getInstance(getApplicationContext(), R.raw.sound).pause();
     }
 }
