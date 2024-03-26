@@ -1,4 +1,4 @@
-package com.example.asg01;
+package com.example.asg01.entity;
 
 import java.io.Serializable;
 

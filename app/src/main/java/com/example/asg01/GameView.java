@@ -3,13 +3,18 @@ package com.example.asg01;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
+import android.graphics.*;
+import android.graphics.drawable.AnimationDrawable;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import com.example.asg01.entity.Background;
 import com.example.asg01.entity.Bullet;
 import com.example.asg01.entity.Ship;
@@ -20,7 +25,11 @@ public class GameView extends SurfaceView implements Runnable{
     private boolean isPlaying;
     public static int screenX, screenY;
     private Thread thread;
+    private final int TARGET_FPS = 60;
+    private final long MAX_FRAME_TIME = 1000 / TARGET_FPS;
     private final Paint paint;
+    private int diffX = 0, diffY = 0;
+    private boolean isMoving = false;
 
     //entities
     private final Background backGround1, backGround2;
@@ -28,7 +37,8 @@ public class GameView extends SurfaceView implements Runnable{
     private final ArrayList<Bullet> bullets = new ArrayList<>();
     private final ArrayList<Bullet> unusableBullets = new ArrayList<>();
     private int cnt = 0;
-
+    private SoundPool soundPool;
+    int soundID[] = new int[5];
 
     private final SharedPreferences sharedPreferences;
 
@@ -48,15 +58,37 @@ public class GameView extends SurfaceView implements Runnable{
         backGround2.setY(0);
 
         ship = new Ship(getResources());
+        soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+        soundID[0] = soundPool.load(context, R.raw.fx_bullet, 1);
     }
 
 
     @Override
     public void run() {
-        while (isPlaying){
+        long startTime;
+        long timeMillis;
+        long waitTime;
+        long totalTime = 0;
+        int frameCount = 0;
+
+        while (isPlaying) {
+            startTime = System.nanoTime();
             update();
             draw();
-            sleep();
+            timeMillis = (System.nanoTime() - startTime) / 1000000; // Thời gian đã trôi qua từ khi bắt đầu vòng lặp
+            waitTime = Math.max(0, MAX_FRAME_TIME - timeMillis); // Thời gian nghỉ giữa các frame
+            try {
+                Thread.sleep(waitTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            totalTime += System.nanoTime() - startTime;
+            frameCount++;
+            if (frameCount == TARGET_FPS) {
+                // Tính toán và hiển thị FPS trung bình
+                frameCount = 0;
+                totalTime = 0;
+            }
         }
     }
 
@@ -69,11 +101,11 @@ public class GameView extends SurfaceView implements Runnable{
 
         // if the backgr was out of the screen, set y = - screen height.
         if(y1 >= screenY){
-            backGround1.setY(-screenY);
+            backGround1.setY(backGround2.getY() - screenY);
 
         }
         if(y2  >=  screenY){
-            backGround2.setY(-screenY);
+            backGround2.setY(backGround1.getY()-screenY);
         }
 
         for (Bullet bullet : bullets){
@@ -114,7 +146,7 @@ public class GameView extends SurfaceView implements Runnable{
 
     private void sleep() {
         try {
-            Thread.sleep(10);
+            Thread.sleep(20);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -135,32 +167,53 @@ public class GameView extends SurfaceView implements Runnable{
         }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int actionEvent = event.getAction();
-        float X = event.getX();
-        float Y = event.getY();
-        switch (actionEvent) {
-            case MotionEvent.ACTION_MOVE:
-                if(event.getY() <= screenY && event.getX() <= screenX){
-                    ship.setX((int) X - ship.getW() / 2);
-                    ship.setY((int) Y - ship.getH() / 2);
-                }
-                break;
-            case MotionEvent.ACTION_DOWN:
+@Override
+public boolean onTouchEvent(MotionEvent event) {
+    switch (event.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+            diffX = (int) event.getX() - ship.getX() - ship.getW()/2;
+            diffY = (int) event.getY() - ship.getY() - ship.getH()/2;
+            isMoving = true;
+            break;
+        case MotionEvent.ACTION_MOVE:
+            int desX = (int) event.getX() - diffX - ship.getW()/2;
+            int desY = (int) event.getY() - diffY - ship.getH()/2;
+            if (desX + ship.getW() >= screenX) {
+                desX = screenX - ship.getW();
+                diffX = Math.min(0, (int) event.getX() - desX - ship.getW()/2);
+            } else if (desX <= 0) {
+                desX = 0;
+                diffX = Math.max(0, (int) event.getX() - desX - ship.getW()/2);
+            }
 
-                break;
-            default: break;
-        }
-        return true;
+
+            if (desY + ship.getH() >= screenY) {
+                desY = screenY - ship.getH();
+                diffY = Math.min(0, (int) event.getY() - desY - ship.getH()/2);
+            } else if (desY <= 0) {
+                desY = 0;
+                diffY = Math.max(0, (int) event.getY() - desY - ship.getH()/2);
+            }
+
+
+            ship.setX(desX);
+            ship.setY(desY);
+            break;
+        case MotionEvent.ACTION_UP:
+            isMoving = false;
+            break;
+        default: break;
     }
-
+    return true;
+}
 
     public void newBullet(){
         Bullet bullet = new Bullet(getResources());
         bullet.setX((int) ((ship.getX()  ) + (ship.getW() / 2) - (bullet.getW() / 2)));
         bullet.setY(ship.getY() - ship.getW() / 4);
-
         bullets.add(bullet);
+        //===========demo add sound when new bullet appear===============
+        soundPool.play(soundID[0], 1, 1, 0, 0, 1);
+        //=======end, maybe have different way to implement it===========
     }
 }

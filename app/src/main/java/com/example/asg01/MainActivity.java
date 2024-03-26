@@ -1,6 +1,5 @@
 package com.example.asg01;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.*;
@@ -9,7 +8,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,24 +19,18 @@ import android.os.Bundle;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
+import com.example.asg01.service.MusicMediaService;
+import com.example.asg01.service.MusicMediaServiceConnection;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private User user;
-    private String UID;
-    private FirebaseAuth firebaseAuth;
-    private FirebaseDatabase database;
-
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
     private ImageView skinChange;
-    private TextView welcome;
     private ViewFlipper viewFlipper;
     private GestureDetector gestureDetector;
 
@@ -49,24 +41,14 @@ public class MainActivity extends AppCompatActivity {
     private static String[] permissionList;
     private int permissionRequestCode = 1;
 
-    private MyService myService;
+
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
     }
 
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            MyService.MyBinder myBinder = (MyService.MyBinder) iBinder;
-            myService = myBinder.getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            myService = null;
-        }
-    };
+    private MusicMediaService musicService;
+    private MusicMediaServiceConnection mediaServiceConnection = new MusicMediaServiceConnection();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,23 +67,14 @@ public class MainActivity extends AppCompatActivity {
         }
 //        checkAllPermission();
         skinChange = findViewById(R.id.skinChange);
-        welcome = findViewById(R.id.textView3);
-
-        // get firebaseAuth and DBreference
-        firebaseAuth = FirebaseAuth.getInstance();
-        UID = firebaseAuth.getCurrentUser().getUid();
-        database = FirebaseDatabase.getInstance();
 
         // sharedPref
         sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        user = (User) getIntent().getSerializableExtra("user");
-        welcome.setText("Hi,\n" + user.getFullname());
-
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.fragmentView, new ComplexButton()).commit();
-        ImageView avt = findViewById(R.id.avt);
+        fragmentManager.beginTransaction().replace(R.id.fragmentView, new ComplexButtonFragment()).commit();
+        fragmentManager.beginTransaction().replace(R.id.fragmentView1, new UserInfoFragment()).commit();
 
         gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -119,15 +92,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        avt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
         Dialog dialog = new Dialog(MainActivity.this);
         skinChange.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public void onClick(View view) {
                 dialog.setContentView(R.layout.skin_change);
@@ -149,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 while(viewFlipper.getDisplayedChild() != curSkinNumber) {
                     viewFlipper.showNext();
                 }
+
                 viewFlipper.setOnTouchListener(new View.OnTouchListener() {
                     @SuppressLint("ClickableViewAccessibility")
                     @Override
@@ -176,10 +144,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        Intent intent = new Intent(this, MyService.class);
-        startService(intent);
-        bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -187,30 +151,19 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         curSkinNumber = sharedPreferences.getInt("oldSkin", 0);
         skinChange.setImageResource(skins[curSkinNumber]);
-        if (myService != null) {
-            myService.playMedia();
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        editor.putInt("oldSkin", curSkinNumber);
-        editor.apply();
+        Intent intent = new Intent(this, MusicMediaService.class);
+        bindService(intent, mediaServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        myService.pauseMedia();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Intent intent = new Intent(this, MyService.class);
-        stopService(intent);
-        unbindService(connection);
+        editor.putInt("oldSkin", curSkinNumber);
+        editor.apply();
+        if (musicService != null) {
+            musicService.pauseMedia();
+        }
+        unbindService(mediaServiceConnection);
     }
 
     public static int getCurrentSkin() {
@@ -258,4 +211,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 }
