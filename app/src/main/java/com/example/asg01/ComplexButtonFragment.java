@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.example.asg01.entity.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -20,7 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
-public class ComplexButton extends Fragment {
+public class ComplexButtonFragment extends Fragment {
 
     private ImageView startButton;
     private ImageView settingButton;
@@ -28,9 +29,10 @@ public class ComplexButton extends Fragment {
     private ImageView shareButton;
     private ImageView donateButton;
 
+    private User user;
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase database;
-    public ComplexButton() {
+    public ComplexButtonFragment() {
         // Required empty public constructor
     }
 
@@ -50,17 +52,18 @@ public class ComplexButton extends Fragment {
         shareButton = rootView.findViewById(R.id.shareButton);
         donateButton = rootView.findViewById(R.id.donateButton);
 
+        user = (User) getActivity().getIntent().getSerializableExtra("user");
+
         // get firebaseAuth and DBreference
         firebaseAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
-
-
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Activity activity = getActivity();
                 Intent intent = new Intent(activity, GameActivity.class);
+                intent.putExtra("user", user);
                 startActivity(intent);
             }
         });

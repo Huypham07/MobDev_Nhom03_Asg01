@@ -21,7 +21,7 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.MobDev_Nhom03_Asg01">
         <service
-                android:name=".MyService"
+                android:name=".service.MusicMediaService"
                 android:enabled="true"
                 android:exported="true">
         </service>

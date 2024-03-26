@@ -7,20 +7,9 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity"
         android:background="@drawable/background" android:orientation="vertical" android:padding="8dp">
-    <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-        <ImageView
-                android:src="@drawable/avt"
-                android:layout_width="50dp"
-                android:layout_height="50dp" android:id="@+id/avt" android:layout_weight="1"/>
-        <TextView
-                android:text="Hi,\nUser"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/textView3" android:layout_weight="1"
-                android:textColor="#EDEAEA" android:layout_marginStart="8dp"/>
-    </LinearLayout>
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/fragmentView1"/>
     <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
