@@ -4,14 +4,14 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.*;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Build;
-import android.os.IBinder;
 import android.provider.Settings;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +19,8 @@ import android.os.Bundle;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
+import com.example.asg01.receiver.InternetHandleEvent;
+import com.example.asg01.receiver.InternetReceiver;
 import com.example.asg01.service.MusicMediaService;
 import com.example.asg01.service.MusicMediaServiceConnection;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -30,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
+    private InternetReceiver internetReceiver;
+
     private ImageView skinChange;
     private ViewFlipper viewFlipper;
     private GestureDetector gestureDetector;
@@ -40,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static String[] permissionList;
     private int permissionRequestCode = 1;
+
+    private Dialog dialog;
+
 
 
     @Override
@@ -66,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
             };
         }
 //        checkAllPermission();
+
         skinChange = findViewById(R.id.skinChange);
 
         // sharedPref
@@ -92,14 +100,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Dialog dialog = new Dialog(MainActivity.this);
+        dialog = new Dialog(MainActivity.this);
         skinChange.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public void onClick(View view) {
                 dialog.setContentView(R.layout.skin_change);
                 dialog.getWindow().setBackgroundDrawableResource(R.drawable.background_dialog);
-                dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 dialog.setCancelable(false);
                 dialog.getWindow().getAttributes().windowAnimations = R.style.fadeAnimation;
 
@@ -144,6 +151,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        internetReceiver = new InternetReceiver().addEvent(new InternetHandleEvent() {
+            @Override
+            public void lostInternet() {
+                // ignore
+            }
+
+            @Override
+            public void capabilitiesChanged(NetworkCapabilities networkCapabilities) {
+                // ignore
+            }
+        });
+        registerReceiver(internetReceiver, filter);
     }
 
     @Override
@@ -164,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
             musicService.pauseMedia();
         }
         unbindService(mediaServiceConnection);
+        unregisterReceiver(internetReceiver);
     }
 
     public static int getCurrentSkin() {

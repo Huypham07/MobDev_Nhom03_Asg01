@@ -9,18 +9,18 @@ import com.example.asg01.R;
 
 public class Bullet {
     private int x, y, w, h;
+    private double ratio;
     private Bitmap bullet;
 
     // create a bullet
-    public Bullet(Resources res){
-        bullet = BitmapFactory.decodeResource(res, R.drawable.bullet2);
+    public Bullet(Resources res, int src){
+        bullet = BitmapFactory.decodeResource(res, src);
 
         w = bullet.getWidth();
         h = bullet.getHeight();
 
-        double ratio = (double) h / w;
-        h = 100;
-        w = (int) (h / ratio);
+        ratio = (double) h / w;
+
         bullet = Bitmap.createScaledBitmap(bullet,w,h,false);
     }
 
@@ -46,6 +46,8 @@ public class Bullet {
 
     public void setW(int w) {
         this.w = w;
+        h = (int) (w * ratio);
+        bullet = Bitmap.createScaledBitmap(bullet,w,h,false);
     }
 
     public int getH() {
@@ -54,6 +56,8 @@ public class Bullet {
 
     public void setH(int h) {
         this.h = h;
+        w = (int) (h / ratio);
+        bullet = Bitmap.createScaledBitmap(bullet,w,h,false);
     }
 
     public Bitmap getBullet() {

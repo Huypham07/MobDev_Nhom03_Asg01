@@ -8,67 +8,44 @@ import android.hardware.SensorManager;
 
 import java.util.List;
 import java.util.ArrayList;
-public abstract class AndroidSensor extends MeasurableSensor implements SensorEventListener {
+public abstract class AndroidSensor implements SensorEventListener {
     private Context context;
-    private String sensorFeature;
+    private int sensorType;
     private SensorManager sensorManager;
     private Sensor sensor;
+    protected CustomEventSensor customEvent;
 
-    public AndroidSensor(Context context, String sensorFeature, int sensorType) {
-        super(sensorType);
+    public AndroidSensor(Context context, int sensorType) {
         this.context = context;
-        this.sensorFeature = sensorFeature;
+        this.sensorType = sensorType;
     }
 
-    @Override
-    public boolean doesSensorExist() {
-        return context.getPackageManager().hasSystemFeature(sensorFeature);
+    public void addCustomEventSensor(CustomEventSensor customEvent) {
+        this.customEvent = customEvent;
     }
 
-    @Override
-    public void startListening() {
-        if (!doesSensorExist()) {
-            return;
-        }
+    public boolean sensorExist() {
         if (sensorManager == null && sensor == null) {
             sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
             sensor = sensorManager.getDefaultSensor(sensorType);
+            return true;
+        }
+        return false;
+    }
+
+    public void startListening() {
+        if (!sensorExist()) {
+            return;
         }
         if (sensor != null) {
-            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME);
         }
     }
 
-    @Override
     public void stopListening() {
-        if (!doesSensorExist() || sensorManager == null) {
+        if (!sensorExist() || sensorManager == null) {
             return;
         }
-        sensorManager.unregisterListener(this);
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (!doesSensorExist()) {
-            return;
-        }
-        if (event.sensor.getType() == sensorType) {
-            if (onSensorValuesChanged != null) {
-                onSensorValuesChanged.onValuesChanged(convertArrayToList(event.values));
-            }
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Không cần xử lý
-    }
-
-    private List<Float> convertArrayToList(float[] array) {
-        List<Float> list = new ArrayList<>();
-        for (float value : array) {
-            list.add(value);
-        }
-        return list;
+        sensorManager.unregisterListener(this, sensor);
     }
 }
