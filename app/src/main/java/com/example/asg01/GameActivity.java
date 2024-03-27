@@ -1,21 +1,27 @@
 package com.example.asg01;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Point;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import android.view.*;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.asg01.entity.User;
+import com.example.asg01.receiver.InternetHandleEvent;
+import com.example.asg01.receiver.InternetReceiver;
 import com.example.asg01.service.MusicMediaService;
 import com.example.asg01.service.MusicMediaServiceConnection;
 
 public class GameActivity extends AppCompatActivity {
     private User user;
     private GameView gameView;
-
+    private InternetReceiver internetReceiver;
 
 
     public void onBackPressed() {
@@ -33,16 +39,54 @@ public class GameActivity extends AppCompatActivity {
         Point point = new Point();
         //set default display, get width and height to Game View
         getWindowManager().getDefaultDisplay().getSize(point);
-        gameView = new GameView(this, point.x, point.y);
+        gameView = new GameView(this, point.x, point.y).addGameEvent(new GameEvent() {
+            @Override
+            public void gameOver() {
+                Intent intent = new Intent(GameActivity.this, GameOverActivity.class);
+                intent.putExtra("user", user);
+                intent.putExtra("score", gameView.getScore());
+                startActivity(intent);
+            }
+        });
         setContentView(gameView);
         ImageView pauseBtn = new ImageView(this);
         pauseBtn.setImageResource(R.drawable.pause);
         pauseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(GameActivity.this, MainActivity.class);
-                intent.putExtra("user", user);
-                startActivity(intent);
+                Dialog dialog = new Dialog(GameActivity.this);
+                dialog.setContentView(R.layout.layout_change_mode);
+                dialog.getWindow().setBackgroundDrawableResource(R.drawable.double_line_rectangle);
+                dialog.getWindow().getAttributes().windowAnimations = R.style.fadeAnimation;
+                dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        gameView.resume();
+                    }
+                });
+                Button back = dialog.findViewById(R.id.back);
+                Switch changeMode = dialog.findViewById(R.id.switch1);
+                back.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(GameActivity.this, MainActivity.class);
+                        intent.putExtra("user", user);
+                        startActivity(intent);
+                    }
+                });
+                changeMode.setChecked((gameView.getMode() == GameView.TOUCH_MODE) ? false : true);
+                changeMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                        if (b) {
+                            gameView.setMode(GameView.SENSOR_MODE);
+                        } else {
+                            gameView.setMode(GameView.TOUCH_MODE);
+                        }
+                    }
+                });
+                dialog.show();
+                gameView.pause();
             }
         });
 
@@ -52,6 +96,21 @@ public class GameActivity extends AppCompatActivity {
         layoutParams.leftMargin = 20;
 
         addContentView(pauseBtn, layoutParams);
+
+
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        internetReceiver = new InternetReceiver().addEvent(new InternetHandleEvent() {
+            @Override
+            public void lostInternet() {
+                gameView.pause();
+            }
+
+            @Override
+            public void capabilitiesChanged(NetworkCapabilities networkCapabilities) {
+                gameView.resume();
+            }
+        });
+        registerReceiver(internetReceiver, filter);
     }
 
     @Override
@@ -75,5 +134,6 @@ public class GameActivity extends AppCompatActivity {
             musicService.pauseMedia();
         }
         unbindService(mediaServiceConnection);
+        unregisterReceiver(internetReceiver);
     }
 }

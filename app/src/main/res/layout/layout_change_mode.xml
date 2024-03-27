@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools" android:layout_width="wrap_content"
+              android:layout_height="wrap_content" android:orientation="vertical"
+              android:padding="16dp">
+
+    <Button
+            android:text="Go to main Screen"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/back" android:layout_weight="1"
+            android:layout_marginBottom="16dp" android:layout_gravity="center_horizontal"/>
+    <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+        <TextView
+                android:text="Touch mode" android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/textView7" android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"/>
+        <Switch
+                android:layout_height="wrap_content" android:id="@+id/switch1"
+                android:minHeight="48dp" android:layout_gravity="center_horizontal"
+                tools:ignore="UseSwitchCompatOrMaterialXml"
+                android:layout_width="wrap_content" android:layout_toEndOf="@+id/textView7" android:minWidth="48dp"/>
+        <TextView
+                android:text="Sensor mode" android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/textView8"
+                android:layout_toEndOf="@+id/switch1" android:layout_centerVertical="true"/>
+    </RelativeLayout>
+</LinearLayout>

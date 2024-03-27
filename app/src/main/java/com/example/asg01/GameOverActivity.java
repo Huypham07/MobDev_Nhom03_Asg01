@@ -4,15 +4,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.fragment.app.FragmentManager;
+import com.example.asg01.entity.User;
 import com.example.asg01.service.MusicMediaService;
 import com.example.asg01.service.MusicMediaServiceConnection;
 
 public class GameOverActivity extends AppCompatActivity {
     private MusicMediaService musicService;
     private MusicMediaServiceConnection mediaServiceConnection = new MusicMediaServiceConnection();
+
+    private User user;
+    private TextView score;
+
+    @Override
+    public void onBackPressed() {
+        //ignore
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,10 +33,15 @@ public class GameOverActivity extends AppCompatActivity {
         fragmentManager.beginTransaction().replace(R.id.fragmentView, new ComplexButtonFragment()).commit();
 
         Button backButton = findViewById(R.id.button);
+        score = findViewById(R.id.score);
+
+        user = (User) getIntent().getSerializableExtra("user");
+        score.setText(String.valueOf(getIntent().getIntExtra("score", 0)));
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(GameOverActivity.this, MainActivity.class);
+                intent.putExtra("user", user);
                 startActivity(intent);
             }
         });

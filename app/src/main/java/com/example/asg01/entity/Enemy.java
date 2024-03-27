@@ -3,26 +3,23 @@ package com.example.asg01.entity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.widget.Toast;
 import com.example.asg01.GameView;
-import com.example.asg01.MainActivity;
 import com.example.asg01.R;
 
-public class Ship {
+public class Enemy {
     private int x, y, w, h;
     private Bitmap skin;
     private Resources res;
-    public Ship(Resources res) {
+    public Enemy(Resources res, int src) {
         this.res = res;
-        skin = BitmapFactory.decodeResource(res, MainActivity.getCurrentSkin());
+        skin = BitmapFactory.decodeResource(res, src);
         w = skin.getWidth();
         h = skin.getHeight();
         double ratio = (double) h / w;
-        w = GameView.screenX / 5;
+        w = GameView.screenX / 6;
         h = (int) (ratio * w);
+
         skin = Bitmap.createScaledBitmap(skin, w, h, false);
-        x = (GameView.screenX - w) / 2;
-        y = GameView.screenY - h * 3 / 2;
     }
 
     public int getX() {
