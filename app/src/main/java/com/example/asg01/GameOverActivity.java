@@ -2,6 +2,8 @@ package com.example.asg01;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -9,12 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.fragment.app.FragmentManager;
 import com.example.asg01.entity.User;
+import com.example.asg01.receiver.InternetReceiver;
 import com.example.asg01.service.MusicMediaService;
 import com.example.asg01.service.MusicMediaServiceConnection;
 
 public class GameOverActivity extends AppCompatActivity {
     private MusicMediaService musicService;
     private MusicMediaServiceConnection mediaServiceConnection = new MusicMediaServiceConnection();
+    private InternetReceiver internetReceiver;
 
     private User user;
     private TextView score;
@@ -45,6 +49,8 @@ public class GameOverActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        internetReceiver = new InternetReceiver();
     }
 
     @Override
@@ -52,6 +58,8 @@ public class GameOverActivity extends AppCompatActivity {
         super.onResume();
         Intent intent = new Intent(GameOverActivity.this, MusicMediaService.class);
         bindService(intent, mediaServiceConnection, Context.BIND_AUTO_CREATE);
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(internetReceiver, filter);
     }
 
     @Override
@@ -61,5 +69,6 @@ public class GameOverActivity extends AppCompatActivity {
             musicService.pauseMedia();
         }
         unbindService(mediaServiceConnection);
+        unregisterReceiver(internetReceiver);
     }
 }
