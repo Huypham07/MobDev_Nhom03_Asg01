@@ -7,13 +7,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.asg01.entity.User;
-import com.example.asg01.receiver.InternetHandleEvent;
 import com.example.asg01.receiver.InternetReceiver;
 import com.example.asg01.service.MusicMediaService;
 import com.example.asg01.service.MusicMediaServiceConnection;
@@ -97,20 +95,7 @@ public class GameActivity extends AppCompatActivity {
 
         addContentView(pauseBtn, layoutParams);
 
-
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        internetReceiver = new InternetReceiver().addEvent(new InternetHandleEvent() {
-            @Override
-            public void lostInternet() {
-                gameView.pause();
-            }
-
-            @Override
-            public void capabilitiesChanged(NetworkCapabilities networkCapabilities) {
-                gameView.resume();
-            }
-        });
-        registerReceiver(internetReceiver, filter);
+        internetReceiver = new InternetReceiver();
     }
 
     @Override
@@ -125,6 +110,8 @@ public class GameActivity extends AppCompatActivity {
         gameView.resume();
         Intent intent = new Intent(this, MusicMediaService.class);
         bindService(intent, mediaServiceConnection, Context.BIND_AUTO_CREATE);
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(internetReceiver, filter);
     }
 
     @Override

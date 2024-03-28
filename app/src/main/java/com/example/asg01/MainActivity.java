@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.*;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -19,7 +18,6 @@ import android.os.Bundle;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
-import com.example.asg01.receiver.InternetHandleEvent;
 import com.example.asg01.receiver.InternetReceiver;
 import com.example.asg01.service.MusicMediaService;
 import com.example.asg01.service.MusicMediaServiceConnection;
@@ -150,20 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
-
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        internetReceiver = new InternetReceiver().addEvent(new InternetHandleEvent() {
-            @Override
-            public void lostInternet() {
-                // ignore
-            }
-
-            @Override
-            public void capabilitiesChanged(NetworkCapabilities networkCapabilities) {
-                // ignore
-            }
-        });
-        registerReceiver(internetReceiver, filter);
+        internetReceiver = new InternetReceiver();
     }
 
     @Override
@@ -173,6 +158,8 @@ public class MainActivity extends AppCompatActivity {
         skinChange.setImageResource(skins[curSkinNumber]);
         Intent intent = new Intent(this, MusicMediaService.class);
         bindService(intent, mediaServiceConnection, Context.BIND_AUTO_CREATE);
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(internetReceiver, filter);
     }
 
     @Override
