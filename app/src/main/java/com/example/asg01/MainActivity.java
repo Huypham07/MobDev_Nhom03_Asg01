@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int skins[] = {R.drawable.ship1, R.drawable.ship2, R.drawable.ship3, R.drawable.ship4
             , R.drawable.ship5, R.drawable.ship6, R.drawable.ship7};
     private static int curSkinNumber = 0;
+    private int curAvatarNumber = 0;
 
     private static String[] permissionList;
     private int permissionRequestCode = 1;
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        
         if (Build.VERSION.SDK_INT > 33) {
             permissionList = new String[]{
                     "Manifest.permission.READ_MEDIA_IMAGES",
@@ -155,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         curSkinNumber = sharedPreferences.getInt("oldSkin", 0);
+        curAvatarNumber = sharedPreferences.getInt("oldAvatar", 0);
         skinChange.setImageResource(skins[curSkinNumber]);
         Intent intent = new Intent(this, MusicMediaService.class);
         bindService(intent, mediaServiceConnection, Context.BIND_AUTO_CREATE);
@@ -166,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         editor.putInt("oldSkin", curSkinNumber);
+        editor.putInt("oldAvatar", curAvatarNumber);
         editor.apply();
         if (musicService != null) {
             musicService.pauseMedia();
@@ -177,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
     public static int getCurrentSkin() {
         return skins[curSkinNumber];
     }
+
 
     public void checkAllPermission() {
         ArrayList<String> notGrantedPermission = new ArrayList<>();

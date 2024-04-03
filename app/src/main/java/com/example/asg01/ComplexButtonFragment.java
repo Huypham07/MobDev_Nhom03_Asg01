@@ -122,6 +122,7 @@ public class ComplexButtonFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return null;
     }
 }
