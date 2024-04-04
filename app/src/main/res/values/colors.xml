@@ -2,4 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="dark_blue">#924E9E</color>
+    <color name="light_blue">#7552B3</color>
+    <color name="opacity_white">#D9dbde</color>
+    <color name="purple">#673AB7</color>
+    <color name="opacity_white2">#66F1F4F8</color>
 </resources>

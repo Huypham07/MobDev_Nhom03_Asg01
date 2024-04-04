@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="30dp">
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Basic"
+        android:textColor="@color/purple"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar6">
+
+        <Switch
+            android:id="@+id/vibrationSwitch"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="Vibration"
+            android:textSize="20sp"
+            android:thumb="@drawable/thumb"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <Switch
+            android:id="@+id/volumeSwitch1"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:checked="true"
+            android:paddingLeft="10dp"
+            android:text="Soundtrack"
+            android:textSize="20sp"
+            android:thumb="@drawable/thumb"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <SeekBar
+            android:id="@+id/volumeSeekBar1"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dp"
+            android:max="100"
+            android:progressDrawable="@drawable/seekbar_progress"
+            android:splitTrack="false"
+            android:thumb="@drawable/thumb" />
+
+        <Switch
+            android:id="@+id/volumeSwitch2"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="105dp"
+            android:checked="true"
+            android:paddingLeft="10dp"
+            android:text="Shot Sound"
+            android:textSize="20sp"
+            android:thumb="@drawable/thumb"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <SeekBar
+            android:id="@+id/volumeSeekBar2"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="140dp"
+            android:progressDrawable="@drawable/seekbar_progress"
+            android:splitTrack="false"
+            android:thumb="@drawable/thumb" />
+
+        <TextView
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="175dp"
+            android:checked="true"
+            android:paddingLeft="10dp"
+            android:text="Brightness"
+            android:textSize="20sp"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <SeekBar
+            android:id="@+id/brightnessSeekBar"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="210dp"
+            android:progressDrawable="@drawable/seekbar_progress"
+            android:splitTrack="false"
+            android:thumb="@drawable/thumb"
+            android:max="255"/>
+    </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar6"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:progressDrawable="@color/purple"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="Control"
+        android:textColor="@color/purple"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+
+    <ProgressBar
+        android:id="@+id/progressBar7"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:progressDrawable="@color/purple"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+    <FrameLayout
+        android:id="@+id/frameLayout2"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar7">
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:gravity="center"
+            android:text="Swipe Mode"
+            android:textSize="20sp" />
+
+        <Switch
+            android:id="@+id/changeModeSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:thumb="@drawable/thumb"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:gravity="center"
+            android:text="Tilt Mode"
+            android:textSize="20sp" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@color/purple"
+        android:id="@+id/exitGameButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout2">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="Exit"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="25dp"
+            android:src="@drawable/ic_exit2" />
+    </FrameLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
