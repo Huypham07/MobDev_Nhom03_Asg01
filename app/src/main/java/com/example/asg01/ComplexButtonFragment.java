@@ -142,14 +142,10 @@ public class ComplexButtonFragment extends Fragment {
             }
         });
 
-        settingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                firebaseAuth.signOut();
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                intent.putExtra("islogout", true);
-                startActivity(intent);
-            }
+        settingButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), SettingsActivity.class);
+            intent.putExtra("user", user);
+            startActivity(intent);
         });
 
         rankButton.setOnClickListener(new View.OnClickListener() {

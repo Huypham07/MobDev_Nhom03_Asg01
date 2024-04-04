@@ -16,8 +16,8 @@ import com.example.asg01.service.MusicMediaService;
 import com.example.asg01.service.MusicMediaServiceConnection;
 
 public class GameOverActivity extends AppCompatActivity {
-    private MusicMediaService musicService;
-    private MusicMediaServiceConnection mediaServiceConnection = new MusicMediaServiceConnection();
+//    private MusicMediaService musicService;
+//    private MusicMediaServiceConnection mediaServiceConnection = new MusicMediaServiceConnection();
     private InternetReceiver internetReceiver;
 
     private ComplexButtonFragment buttonFragment;
@@ -58,8 +58,13 @@ public class GameOverActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Intent intent = new Intent(GameOverActivity.this, MusicMediaService.class);
-        bindService(intent, mediaServiceConnection, Context.BIND_AUTO_CREATE);
+//        Intent intent = new Intent(GameOverActivity.this, MusicMediaService.class);
+//        bindService(intent, mediaServiceConnection, Context.BIND_AUTO_CREATE);
+        if (SettingsActivity.onSoundtrack) {
+            MainActivity.musicServiceConnection.getMusicService().playMedia();
+        } else {
+            MainActivity.musicServiceConnection.getMusicService().pauseMedia();
+        }
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(internetReceiver, filter);
     }
@@ -67,10 +72,11 @@ public class GameOverActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (musicService != null) {
-            musicService.pauseMedia();
-        }
-        unbindService(mediaServiceConnection);
+//        if (musicService != null) {
+//            musicService.pauseMedia();
+//        }
+//        unbindService(mediaServiceConnection);
+
         unregisterReceiver(internetReceiver);
     }
 }

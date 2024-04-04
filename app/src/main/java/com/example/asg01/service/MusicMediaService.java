@@ -2,6 +2,7 @@ package com.example.asg01.service;
 
 import android.app.*;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
@@ -11,6 +12,7 @@ import com.example.asg01.R;
 public class MusicMediaService extends Service {
     private MyBinder binder = new MyBinder();
     private MediaPlayer mediaPlayer;
+    private AudioManager audioManager;
     public MusicMediaService() {
     }
 
@@ -21,9 +23,10 @@ public class MusicMediaService extends Service {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.sound);
         mediaPlayer.setLooping(true);
-        super.onCreate();
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
     }
     @Override
     public void onDestroy() {
@@ -57,5 +60,10 @@ public class MusicMediaService extends Service {
     public void stopMedia() {
         mediaPlayer.stop();
         mediaPlayer.release();
+    }
+
+    public void setVolume(int volume) {
+        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume * maxVolume / 100, 0);
     }
 }

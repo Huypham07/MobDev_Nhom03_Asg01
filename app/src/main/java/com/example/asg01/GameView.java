@@ -51,8 +51,12 @@ public class GameView extends SurfaceView implements Runnable{
     private int cntPlayerBullet = 0;
     private int cntEnemyBullet1 = 0;
     private int cntEnemyBullet2 = 0;
-    private SoundPool soundPool;
-    int soundID[] = new int[5];
+
+    private SoundPool soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);;
+    private int soundID;
+    private static float leftVolume = 1f;
+    private static float rightVolume = 1f;
+    public static boolean isPauseSound = false;
 
     private final SharedPreferences sharedPreferences;
 
@@ -76,8 +80,9 @@ public class GameView extends SurfaceView implements Runnable{
         backGround2.setY(0);
 
         ship = new Ship(getResources());
-        soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-        soundID[0] = soundPool.load(context, R.raw.fx_bullet, 1);
+
+        soundID = soundPool.load(context, R.raw.fx_bullet, 1);
+
 
         accelerometerSensor = new AccelerometerSensor(context);
         accelerometerSensor.addCustomEventSensor(new CustomEventSensor() {
@@ -282,12 +287,17 @@ public class GameView extends SurfaceView implements Runnable{
         return true;
     }
 
-    public int getMode() {
+    public static int getMode() {
         return mode;
     }
 
-    public void setMode(int mode) {
-        this.mode = mode;
+    public static void setMode(int mode) {
+        GameView.mode = mode;
+    }
+
+    public static void setVolume(float leftVolume, float rightVolume) {
+        GameView.leftVolume = leftVolume;
+        GameView.rightVolume = rightVolume;
     }
 
     private void newPlayerBullet() {
@@ -297,7 +307,9 @@ public class GameView extends SurfaceView implements Runnable{
         bullet.setY(ship.getY() - ship.getH() / 4);
         playerBullets.add(bullet);
         //===========demo add sound when new bullet appear===============
-        soundPool.play(soundID[0], 1, 1, 0, 0, 1);
+        if (!isPauseSound) {
+            soundPool.play(soundID, leftVolume, rightVolume, 0, 0, 1);
+        }
         //=======end, maybe have different way to implement it===========
     }
 

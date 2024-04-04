@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private MusicMediaService musicService;
-    private MusicMediaServiceConnection mediaServiceConnection = new MusicMediaServiceConnection();
+    public static MusicMediaServiceConnection musicServiceConnection = new MusicMediaServiceConnection();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -148,6 +148,11 @@ public class MainActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
+
+        if (MainActivity.musicServiceConnection.getMusicService() == null) {
+            Intent intent = new Intent(this, MusicMediaService.class);
+            bindService(intent, MainActivity.musicServiceConnection, Context.BIND_AUTO_CREATE);
+        }
         internetReceiver = new InternetReceiver();
     }
 
@@ -155,9 +160,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         curSkinNumber = sharedPreferences.getInt("oldSkin", 0);
+        SettingsActivity.onSoundtrack = sharedPreferences.getBoolean("onSoundtrack", true);
         skinChange.setImageResource(skins[curSkinNumber]);
-        Intent intent = new Intent(this, MusicMediaService.class);
-        bindService(intent, mediaServiceConnection, Context.BIND_AUTO_CREATE);
+//        Intent intent = new Intent(this, MusicMediaService.class);
+//        bindService(intent, mediaServiceConnection, Context.BIND_AUTO_CREATE);
+        if (MainActivity.musicServiceConnection.getMusicService() != null) {
+            if (SettingsActivity.onSoundtrack) {
+                MainActivity.musicServiceConnection.getMusicService().playMedia();
+            } else {
+                MainActivity.musicServiceConnection.getMusicService().pauseMedia();
+            }
+        }
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(internetReceiver, filter);
     }
@@ -167,10 +180,10 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         editor.putInt("oldSkin", curSkinNumber);
         editor.apply();
-        if (musicService != null) {
-            musicService.pauseMedia();
-        }
-        unbindService(mediaServiceConnection);
+//        if (musicService != null) {
+//            musicService.pauseMedia();
+//        }
+//        unbindService(mediaServiceConnection);
         unregisterReceiver(internetReceiver);
     }
 
