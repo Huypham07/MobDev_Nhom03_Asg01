@@ -20,9 +20,8 @@ public class GameOverActivity extends AppCompatActivity {
     private MusicMediaServiceConnection mediaServiceConnection = new MusicMediaServiceConnection();
     private InternetReceiver internetReceiver;
 
-    private User user;
+    private ComplexButtonFragment buttonFragment;
     private TextView score;
-
     @Override
     public void onBackPressed() {
         //ignore
@@ -33,22 +32,25 @@ public class GameOverActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_over);
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.fragmentView, new ComplexButtonFragment()).commit();
-
         Button backButton = findViewById(R.id.button);
         score = findViewById(R.id.score);
-
-        user = (User) getIntent().getSerializableExtra("user");
         score.setText(String.valueOf(getIntent().getIntExtra("score", 0)));
+
+        buttonFragment = new ComplexButtonFragment();
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.fragmentView, buttonFragment).commit();
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(GameOverActivity.this, MainActivity.class);
-                intent.putExtra("user", user);
+                intent.putExtra("user", buttonFragment.getUser());
                 startActivity(intent);
             }
         });
+
+
 
         internetReceiver = new InternetReceiver();
     }

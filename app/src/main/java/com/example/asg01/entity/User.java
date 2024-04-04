@@ -6,13 +6,15 @@ public class User implements Serializable {
     private String fullname;
     private String birthday;
     private int score = 0;
+    private String phoneNumber;
 
     public User() {
     }
 
-    public User(String fullname, String birthday) {
+    public User(String fullname,String phoneNumber, String birthday) {
         this.fullname = fullname;
         this.birthday = birthday;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getFullname() {
@@ -37,5 +39,13 @@ public class User implements Serializable {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }
