@@ -3,8 +3,8 @@
           xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
-
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
     <uses-permission
@@ -15,8 +15,9 @@
             android:maxSdkVersion="32"/>
 
     <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false"/>
-
-
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <application
             android:allowBackup="true"
             android:dataExtractionRules="@xml/data_extraction_rules"
@@ -27,9 +28,19 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.MobDev_Nhom03_Asg01">
         <service
+            android:name=".service.NotificationJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.app.job.JobService" />
+            </intent-filter>
+        </service>
+        <service
                 android:name=".service.MusicMediaService"
                 android:enabled="true"
                 android:exported="true">
+
         </service>
 
         <activity
@@ -47,6 +58,14 @@
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.example.com"
+                    android:pathPrefix="/path" />
             </intent-filter>
         </activity>
         <activity

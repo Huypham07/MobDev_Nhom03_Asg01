@@ -2,6 +2,8 @@ package com.example.asg01;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.*;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -18,6 +20,8 @@ import android.os.Bundle;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
+
+import com.example.asg01.service.NotificationJobService;
 import com.example.asg01.receiver.InternetReceiver;
 import com.example.asg01.service.MusicMediaService;
 import com.example.asg01.service.MusicMediaServiceConnection;
@@ -49,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-//        super.onBackPressed();
+        super.onBackPressed();
+        finishAffinity();
     }
 
     private MusicMediaService musicService;
@@ -172,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
         }
         unbindService(mediaServiceConnection);
         unregisterReceiver(internetReceiver);
+
     }
 
     public static int getCurrentSkin() {
@@ -220,4 +226,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        JobInfo jobInfo = new JobInfo.Builder(1, new ComponentName(this, NotificationJobService.class))
+                .setMinimumLatency(5000)// Đặt thời gian trễ tối thiểu là 5 giây
+                .build();
+        jobScheduler.schedule(jobInfo);
+    }
 }

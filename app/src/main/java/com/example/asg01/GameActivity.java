@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.asg01.entity.User;
 import com.example.asg01.receiver.InternetReceiver;
 import com.example.asg01.service.MusicMediaService;
@@ -102,6 +103,7 @@ public class GameActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         gameView.pause();
+
     }
 
     @Override
