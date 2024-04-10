@@ -20,12 +20,6 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(String fullname,String phoneNumber, String birthday) {
-        this.fullname = fullname;
-        this.birthday = birthday;
-        this.phoneNumber = phoneNumber;
-    }
-
     public User(String fullname, String birthday, String phoneNumber, String position) {
         this.fullname = fullname;
         this.birthday = birthday;

@@ -118,8 +118,9 @@ public class RegisterActivity extends AppCompatActivity  {
                 checkingFormat(emailEditText.getText().toString()
                         , passwordEditText.getText().toString()
                         , new User(fullName.getText().toString()
+                                , birthday.getText().toString()
                                 , phoneNumber.getText().toString()
-                                , birthday.getText().toString()));
+                                , locationName);
             }
         };
         emailEditText.addTextChangedListener(afterTextChangedListener);
@@ -151,8 +152,9 @@ public class RegisterActivity extends AppCompatActivity  {
                 register(emailEditText.getText().toString()
                         , passwordEditText.getText().toString()
                         , new User(fullName.getText().toString()
+                                , birthday.getText().toString()
                                 , phoneNumber.getText().toString()
-                                , birthday.getText().toString(), locationName));
+                                , locationName));
 
             }
         });
