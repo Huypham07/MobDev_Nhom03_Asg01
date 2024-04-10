@@ -42,7 +42,11 @@ import org.jetbrains.annotations.NotNull;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -167,7 +171,7 @@ public class RegisterActivity extends AppCompatActivity  {
             fusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, location -> {
                         if (location != null) {
-                            getAddressFromLocation(location);
+                            getAddressFromLocation(location.getLatitude(), location.getLongitude());
                         } else {
                             locationName = "Unable to retrieve location";
                         }
@@ -179,6 +183,51 @@ public class RegisterActivity extends AppCompatActivity  {
             e.printStackTrace();
             Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void getAddressFromLocation(double latitude, double longitude) {
+        new Thread(() -> {
+            try {
+                String baseUrl = "https://nominatim.openstreetmap.org/reverse";
+                String lat = String.valueOf(latitude);
+                String lon = String.valueOf(longitude);
+                String urlString = baseUrl + "?format=json&lat=" + lat + "&lon=" + lon;
+                URL url = new URL(urlString);
+
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder jsonDataBuilder = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    jsonDataBuilder.append(line);
+                }
+                String jsonData = jsonDataBuilder.toString();
+                reader.close();
+
+                int cityIndex = jsonData.indexOf("city");
+                if (cityIndex != -1) {
+                    int commaIndex = jsonData.indexOf(",", cityIndex);
+                    if (commaIndex != -1) {
+                        String cityName = jsonData.substring(cityIndex + 7, commaIndex).trim();
+                        if (cityName.startsWith("\"")) {
+                            cityName = cityName.substring(1);
+                        }
+                        if (cityName.endsWith("\"")) {
+                            cityName = cityName.substring(0, cityName.length() - 1);
+                        }
+                        final String finalCityName = cityName;
+                        runOnUiThread(() -> locationName = finalCityName);
+                        return;
+                    }
+                }
+                runOnUiThread(() -> locationName = "Location not found");
+            } catch (IOException e) {
+                e.printStackTrace();
+                locationName = "Location not found";
+            }
+        }).start();
     }
 
     private void getAddressFromLocation(Location location) {
