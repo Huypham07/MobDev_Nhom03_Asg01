@@ -1,5 +1,6 @@
 package com.example.asg01;
 
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
@@ -63,11 +64,14 @@ public class ComplexButtonFragment extends Fragment {
     private TabHost tabHost;
     private ListView worldRank;
     private ArrayList<User> worldUserArrayList = new ArrayList<>();
+    private ArrayList<User> localUserArrayList = new ArrayList<>();
     private ScoreAdapter worldScoreAdapter;
 
     private ListView friendRank;
+    private ListView localRank;
     private ArrayList<User> friendUserArrayList = new ArrayList<>();
     private ScoreAdapter friendScoreAdapter;
+    private ScoreAdapter localScoreAdapter;
     public ComplexButtonFragment() {
         // Required empty public constructor
     }
@@ -116,6 +120,11 @@ public class ComplexButtonFragment extends Fragment {
         tabSpec.setContent(R.id.tab2);
         tabSpec.setIndicator("Friend");
         tabHost.addTab(tabSpec);
+
+        tabSpec = tabHost.newTabSpec("tag3");
+        tabSpec.setContent(R.id.tab3);
+        tabSpec.setIndicator("Local");
+        tabHost.addTab(tabSpec);
         tabHost.setCurrentTab(0);
 
         worldRank = tabHost.findViewById(R.id.worldrank);
@@ -123,6 +132,9 @@ public class ComplexButtonFragment extends Fragment {
 
         friendRank = rankDialog.findViewById(R.id.friendrank);
         friendScoreAdapter = new ScoreAdapter(getContext(), friendUserArrayList);
+
+        localRank = rankDialog.findViewById(R.id.localrank);
+        localScoreAdapter = new ScoreAdapter(getContext(), localUserArrayList);
 
         ImageView closeBtn = rankDialog.findViewById(R.id.close_rank_layout);
         closeBtn.setOnClickListener(new View.OnClickListener() {
@@ -153,6 +165,7 @@ public class ComplexButtonFragment extends Fragment {
             public void onClick(View view) {
                 getWorldRank();
                 getFriendRankFromContact(getContact());
+                getLocalRank();
                 rankDialog.show();
             }
         });
@@ -255,6 +268,29 @@ public class ComplexButtonFragment extends Fragment {
                 }
                 sortByScore(friendUserArrayList);
                 friendRank.setAdapter(friendScoreAdapter);
+            }
+        });
+    }
+
+    private void getLocalRank() {
+        localUserArrayList.clear();
+        //localUserArrayList.add(user);
+        database.getReference("Users").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DataSnapshot dataSnapshot = task.getResult();
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        User u = ds.getValue(User.class);
+                        if (!u.equals(user)  && u.getPosition() != null && user.getPosition() != null && u.getPosition().equals(user.getPosition())) {
+                            localUserArrayList.add(u);
+                        }
+                    }
+                    sortByScore(localUserArrayList);
+                    localRank.setAdapter(localScoreAdapter);
+                } else {
+                    Log.e("error", "can't get rank");
+                }
             }
         });
     }

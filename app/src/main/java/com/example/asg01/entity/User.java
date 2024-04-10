@@ -7,6 +7,15 @@ public class User implements Serializable {
     private String birthday;
     private int score = 0;
     private String phoneNumber;
+    private String position;
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
 
     public User() {
     }
@@ -15,6 +24,13 @@ public class User implements Serializable {
         this.fullname = fullname;
         this.birthday = birthday;
         this.phoneNumber = phoneNumber;
+    }
+
+    public User(String fullname, String birthday, String phoneNumber, String position) {
+        this.fullname = fullname;
+        this.birthday = birthday;
+        this.phoneNumber = phoneNumber;
+        this.position = position;
     }
 
     public String getFullname() {

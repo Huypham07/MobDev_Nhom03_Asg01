@@ -1,8 +1,11 @@
 package com.example.asg01;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationListener;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -14,6 +17,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import android.os.Bundle;
 import com.example.asg01.entity.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,7 +41,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity  {
     private EditText emailEditText;
     private EditText passwordEditText;
     private EditText fullName;
@@ -45,6 +51,7 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView registerError;
     private TextView loginButton;
     private ProgressBar progressBar;
+    private String location;
 
     private boolean existPhone = false;
 
@@ -54,12 +61,10 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
         final LinearLayout linearLayout = findViewById(R.id.registerlayout);
         Animation slideUpAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up);
         linearLayout.startAnimation(slideUpAnimation);
 
-        // get firebaseAuth and DBreference
         firebaseAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
 
@@ -123,7 +128,7 @@ public class RegisterActivity extends AppCompatActivity {
                         , passwordEditText.getText().toString()
                         , new User(fullName.getText().toString()
                                 , phoneNumber.getText().toString()
-                                , birthday.getText().toString()));
+                                , birthday.getText().toString(), "Ha noi"));
 
             }
         });
@@ -232,7 +237,6 @@ public class RegisterActivity extends AppCompatActivity {
                 future.complete(existPhone);
             }
         });
-
         return future;
     }
 }
