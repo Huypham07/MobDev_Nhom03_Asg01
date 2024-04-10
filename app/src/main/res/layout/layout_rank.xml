@@ -30,6 +30,7 @@
                     android:padding="8dp"
                     android:layout_weight="1">
 
+
                 <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
                              android:id="@+id/tab1">
                     <include layout="@layout/listview_world_rank"/>
@@ -38,6 +39,11 @@
                 <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
                              android:id="@+id/tab2">
                     <include layout="@layout/listview_friend_rank"/>
+
+                </FrameLayout>
+                <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:id="@+id/tab3">
+                    <include layout="@layout/listview_local_rank"/>
                 </FrameLayout>
 
             </FrameLayout>
