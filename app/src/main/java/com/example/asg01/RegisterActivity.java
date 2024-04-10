@@ -5,6 +5,9 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.location.LocationListener;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -36,9 +39,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 public class RegisterActivity extends AppCompatActivity  {
@@ -51,7 +59,8 @@ public class RegisterActivity extends AppCompatActivity  {
     private TextView registerError;
     private TextView loginButton;
     private ProgressBar progressBar;
-    private String location;
+    private String locationName;
+    private FusedLocationProviderClient fusedLocationClient;
 
     private boolean existPhone = false;
 
@@ -77,6 +86,17 @@ public class RegisterActivity extends AppCompatActivity  {
         registerError = findViewById(R.id.registerError);
         loginButton = findViewById(R.id.loginBtn);
         progressBar = findViewById(R.id.progressBar2);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+        } else {
+            getLastLocation();
+        }
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
@@ -128,7 +148,7 @@ public class RegisterActivity extends AppCompatActivity  {
                         , passwordEditText.getText().toString()
                         , new User(fullName.getText().toString()
                                 , phoneNumber.getText().toString()
-                                , birthday.getText().toString(), "Ha noi"));
+                                , birthday.getText().toString(), locationName));
 
             }
         });
@@ -140,6 +160,61 @@ public class RegisterActivity extends AppCompatActivity  {
                 startActivity(intent);
             }
         });
+    }
+
+    private void getLastLocation() {
+        try {
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, location -> {
+                        if (location != null) {
+                            getAddressFromLocation(location);
+                        } else {
+                            locationName = "Unable to retrieve location";
+                        }
+                    })
+                    .addOnFailureListener(this, e -> {
+                        Toast.makeText(this, "Error getting location: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } catch (SecurityException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void getAddressFromLocation(Location location) {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            if (addresses != null && addresses.size() > 0) {
+                Address address = addresses.get(0);
+                String cityName = address.getLocality();
+                if (cityName == null || cityName.isEmpty()) {
+                    cityName = address.getAdminArea();
+                }
+                if (cityName != null && !cityName.isEmpty()) {
+                    locationName = cityName;
+                } else {
+                    locationName = "Location not found";
+                }
+            } else {
+                locationName = "Location not found";
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            locationName = "Location not found";
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getLastLocation();
+            } else {
+                locationName = "Location permission denied";
+            }
+        }
     }
 
     public boolean onTouchEvent(MotionEvent event) {
