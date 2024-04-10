@@ -120,7 +120,7 @@ public class RegisterActivity extends AppCompatActivity  {
                         , new User(fullName.getText().toString()
                                 , birthday.getText().toString()
                                 , phoneNumber.getText().toString()
-                                , locationName);
+                                , locationName));
             }
         };
         emailEditText.addTextChangedListener(afterTextChangedListener);
