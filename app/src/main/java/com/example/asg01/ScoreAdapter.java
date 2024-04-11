@@ -26,7 +26,8 @@ public class ScoreAdapter extends ArrayAdapter<User> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View itemView = convertView;
         if (itemView == null) {
-            itemView = LayoutInflater.from(getContext()).inflate(R.layout.score_info, parent, false);
+            itemView = LayoutInflater.from(
+                    getContext()).inflate(R.layout.score_info, parent, false);
         }
 
         User user = getItem(position);

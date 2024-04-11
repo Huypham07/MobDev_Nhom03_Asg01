@@ -26,9 +26,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.example.asg01.entity.User;
 import com.example.asg01.receiver.InternetReceiver;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 
@@ -69,19 +71,10 @@ public class UserInfoFragment extends Fragment {
         avt.setImageResource(ImageAdapter.getCurAvt());
         name = rootView.findViewById(R.id.textView3);
 
-        avt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AvatarDialogFragment dialogFragment = new AvatarDialogFragment();
-                dialogFragment.setOnImageSelectedListener(onImageSelectedListener);
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "image_dialog");
-            }
-        });
-
-
         user = (User) (getActivity().getIntent().getSerializableExtra("user"));
         name.setText("Hi,\n" + user.getFullname());
 
+        registerForContextMenu(avt);
 
         return rootView;
     }
@@ -102,6 +95,22 @@ public class UserInfoFragment extends Fragment {
         editor.apply();
 
         requireActivity().unregisterReceiver(internetReceiver);
+    }
+
+    @Override
+    public void onCreateContextMenu(@NonNull @NotNull ContextMenu menu, @NonNull @NotNull View v, @Nullable @org.jetbrains.annotations.Nullable ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.add(0, v.getId(), 0, "Change avatar");
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull @NotNull MenuItem item) {
+        if (item.getTitle().equals("Change avatar")) {
+            AvatarDialogFragment dialogFragment = new AvatarDialogFragment();
+            dialogFragment.setOnImageSelectedListener(onImageSelectedListener);
+            dialogFragment.show(getActivity().getSupportFragmentManager(), "image_dialog");
+        }
+        return true;
     }
 }
 

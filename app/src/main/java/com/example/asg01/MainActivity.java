@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.core.app.ActivityCompat;
@@ -63,19 +64,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        if (Build.VERSION.SDK_INT > 33) {
-            permissionList = new String[]{
-                    "Manifest.permission.READ_MEDIA_IMAGES",
-                    "Manifest.permission.READ_MEDIA_VIDEO",
-            };
-        } else {
-            permissionList = new String[]{
-                    "Manifest.permission.READ_EXTERNAL_STORAGE",
-                    "Manifest.permission.WRITE_EXTERNAL_STORAGE",
-            };
-        }
-//        checkAllPermission();
 
         skinChange = findViewById(R.id.skinChange);
 
@@ -190,53 +178,10 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //        unbindService(mediaServiceConnection);
         unregisterReceiver(internetReceiver);
-
     }
 
     public static int getCurrentSkin() {
         return skins[curSkinNumber];
-    }
-
-    public void checkAllPermission() {
-        ArrayList<String> notGrantedPermission = new ArrayList<>();
-        for (String permission : permissionList) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                notGrantedPermission.add(permission);
-            }
-        }
-        if (!notGrantedPermission.isEmpty()) {
-            ActivityCompat.requestPermissions(this, notGrantedPermission.toArray(new String[notGrantedPermission.size()])
-                        , permissionRequestCode);
-        }
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull @NotNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == permissionRequestCode) {
-            boolean notFullGranted = false;
-            for (int result : grantResults) {
-                if (result == PackageManager.PERMISSION_DENIED) {
-                    notFullGranted = true;
-                    break;
-                }
-            }
-            if (notFullGranted) {
-                for (String permission : permissions) {
-                    if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-                        new MaterialAlertDialogBuilder(this).setMessage("You need to access permission in Settings")
-                                .setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                        intent.setData(Uri.fromParts("package", getPackageName(), null));
-                                        startActivity(intent);
-                                    }
-                                }).create().show();
-                        break;
-                    }
-                }
-            }
-        }
     }
 
     @Override

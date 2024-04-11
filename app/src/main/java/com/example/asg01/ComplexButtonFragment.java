@@ -9,10 +9,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -20,6 +25,7 @@ import android.widget.TabHost;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -47,6 +53,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 public class ComplexButtonFragment extends Fragment {
 
@@ -173,7 +182,7 @@ public class ComplexButtonFragment extends Fragment {
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                screenshot(getActivity().getWindow().getDecorView().getRootView(), "screenshot");
+                startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE), 1);
             }
         });
 
@@ -297,40 +306,80 @@ public class ComplexButtonFragment extends Fragment {
 
 
 
-    private File screenshot(View view, String filename) {
-        Date date = new Date();
+    private Bitmap screenshot(View view) {
+        view.setDrawingCacheEnabled(true);
+        Bitmap scrshot = Bitmap.createBitmap(view.getDrawingCache());
+        view.setDrawingCacheEnabled(false);
+        return scrshot;
+    }
 
-        // Here we are initialising the format of our image name
-        CharSequence format = android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", date);
-        try {
-            // Initialising the directory of storage
-            String dirpath = Environment.getExternalStorageDirectory() + "";
-            File file = new File(dirpath);
-            if (!file.exists()) {
-                boolean mkdir = file.mkdir();
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
+        if (requestCode == 1) {
+            switch (resultCode) {
+                case RESULT_OK:
+                    Log.e("camera", "Picture taken! :)");
+                    if (data != null) {
+                        Bitmap tmpImgCamera = data.getParcelableExtra("data");
+                        Matrix matrix = new Matrix();
+                        matrix.postRotate(90);
+                        matrix.postScale(1.5f, 1.5f);
+                        Bitmap imgCamera = Bitmap.createBitmap(tmpImgCamera, 0, 0, tmpImgCamera.getWidth(), tmpImgCamera.getHeight(), matrix, true);
+                        Bitmap imgGame = screenshot(getActivity().getWindow().getDecorView().getRootView());
+                        Bitmap mergedBitmap = Bitmap.createBitmap(imgGame.getWidth(), imgGame.getHeight(), imgGame.getConfig());
+                        Canvas canvas = new Canvas(mergedBitmap);
+
+                        canvas.drawBitmap(imgGame, 0, 0, null);
+
+                        int x = 750; // Thay đổi tùy ý
+                        int y = 50; // Thay đổi tùy ý
+                        canvas.drawBitmap(imgCamera, x, y, null);
+
+                        imgCamera.recycle();
+                        imgCamera.recycle();
+
+                        Dialog dialog = new Dialog(getContext());
+                        ImageView img = new ImageView(getContext());
+                        dialog.setContentView(img);
+                        img.setImageBitmap(mergedBitmap);
+                        dialog.getWindow().setLayout(720, 1280);
+                        dialog.show();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialog.dismiss();
+                            }
+                        }, 5000);
+                        Toast.makeText(getContext(), "The screenshot has been saved", Toast.LENGTH_LONG).show();
+                        // save to device
+                        Date date = new Date();
+                        //formate file
+                        CharSequence format = android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", date);
+                        try {
+                            // File path
+                            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/" + "Game" + "/" + "screenshot" + "-" + format + ".jpeg";
+                            File file = new File(path);
+                            if (!file.exists()) {
+                                file.mkdir();
+                            }
+
+                            FileOutputStream outputStream = new FileOutputStream(file);
+                            mergedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                            outputStream.flush();
+                            outputStream.close();
+                        } catch (FileNotFoundException io) {
+                            io.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    break;
+                case RESULT_CANCELED:
+                    Log.e("camera", "Picture canceled! :(");
+                    break;
             }
-
-            // File name
-            String path = dirpath + "/" + filename + "-" + format + ".jpeg";
-            view.setDrawingCacheEnabled(true);
-            Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
-            view.setDrawingCacheEnabled(false);
-            File imageurl = new File(path);
-            if (imageurl.exists()) {
-                Toast.makeText(getContext(), "abc", Toast.LENGTH_SHORT).show();
-            }
-            FileOutputStream outputStream = new FileOutputStream(imageurl);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-            outputStream.flush();
-            outputStream.close();
-            return imageurl;
-
-        } catch (FileNotFoundException io) {
-            io.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return null;
     }
 
     public User getUser() {

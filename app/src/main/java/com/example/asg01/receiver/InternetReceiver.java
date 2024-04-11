@@ -19,19 +19,9 @@ public class InternetReceiver extends BroadcastReceiver {
         }
 
         if (InternetConnectivity.isConnected(context)) {
-//            ((Activity) context).runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-                    dialog.cancel();
-//                }
-//            });
+            dialog.cancel();
         } else {
-//            ((Activity) context).runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-                    dialog.show();
-//                }
-//            });
+            dialog.show();
         }
     }
 }
