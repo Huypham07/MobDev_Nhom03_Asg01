@@ -143,8 +143,12 @@ public class BasicSettingsFragment extends Fragment {
                 SettingsActivity.savedBrightness = progress;
                 boolean canWrite = Settings.System.canWrite(requireActivity().getApplicationContext());
                 if (canWrite) {
-                    Settings.System.putInt(requireActivity().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
-                    Settings.System.putInt(requireActivity().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, SettingsActivity.savedBrightness);
+                    Settings.System.putInt(requireActivity().getContentResolver(),
+                            Settings.System.SCREEN_BRIGHTNESS,
+                            Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+                    Settings.System.putInt(requireActivity().getContentResolver(),
+                            Settings.System.SCREEN_BRIGHTNESS,
+                            SettingsActivity.savedBrightness);
                 } else {
                     Intent intent1 = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
                     startActivity(intent1);

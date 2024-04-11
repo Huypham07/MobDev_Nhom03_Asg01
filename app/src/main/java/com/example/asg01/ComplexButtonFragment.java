@@ -182,7 +182,14 @@ public class ComplexButtonFragment extends Fragment {
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE), 1);
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.CAMERA},
+                            1);
+                } else {
+                    startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE), 1);
+                }
             }
         });
 
